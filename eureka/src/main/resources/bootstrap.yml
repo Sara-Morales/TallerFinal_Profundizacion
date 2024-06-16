@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: eureka
+  cloud:
+    config:
+      enabled: true
+      uri: http://localhost:9000
+      username: ${CONFIG_NAME}
+      password: ${CONFIG_PASSWORD}
+
