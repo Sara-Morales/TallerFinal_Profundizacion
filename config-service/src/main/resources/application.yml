@@ -1,0 +1,14 @@
+server:
+  port: 9000
+spring:
+  application:
+    name: config-service
+  cloud:
+    config:
+      server:
+        git:
+          uri: file:///C:/Users/leisy/OneDrive/Documentos/Universidades/Poli/PROF-SW/configs-multi-project-trabajo-final
+  security:
+    user:
+      name: ${CONFIG_NAME}
+      password: ${CONFIG_PASSWORD}
