@@ -12,6 +12,10 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class MoviesDTO {
+    @NotNull(message = "El id es obligatorio")
+    @Min(value = 1, message = "La id minimo es 1")
+    private Long id;
+
     @NotEmpty(message = "El título es obligatorio")
     private String title;
 
@@ -25,7 +29,7 @@ public class MoviesDTO {
 
     @Override
     public String toString() {
-        return "{\"title\":\"" + title + "\", \"director\":\"" + director + "\", \"rating\":" + rating + "}";
+        return "{\"id\":\"" + id + "\", \"title\":\"" + title + "\", \"director\":\"" + director + "\", \"rating\":" + rating + "}";
     }
 }
 

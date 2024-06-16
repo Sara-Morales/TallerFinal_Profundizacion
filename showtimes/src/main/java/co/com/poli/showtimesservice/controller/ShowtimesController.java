@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -78,6 +80,13 @@ public class ShowtimesController {
         } else {
             return this.responseBuild.failedNotFound("No existen un programación con el id enviado");
         }
+    }
+
+    @GetMapping("validation-existence/{movieId}")
+    @Operation(summary = "Verificar asociación de pelicula", description = "Verificar si la pelicula está asociada a alguna programación", tags = { "Showtimes" })
+    public Response validExistence(@PathVariable("movieId") Long movieId) {
+        Boolean resultValidation = this.showtimesService.validateIfExistShowtimesByMovieId(movieId);
+        return this.responseBuild.successValidation(resultValidation);
     }
 
     private List<Map<String, String>> formatValidationErrors(BindingResult result) {

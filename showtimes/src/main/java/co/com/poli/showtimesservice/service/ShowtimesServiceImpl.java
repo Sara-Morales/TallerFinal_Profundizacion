@@ -79,4 +79,9 @@ public class ShowtimesServiceImpl implements IShowtimesServices {
         }
     }
 
+
+    public boolean validateIfExistShowtimesByMovieId(Long movieId) {
+        Optional<List<Showtimes>> showtime = showtimesRepository.getShowtimesByMovieId(movieId);
+        return showtime.isPresent() && !showtime.get().isEmpty();
+    }
 }

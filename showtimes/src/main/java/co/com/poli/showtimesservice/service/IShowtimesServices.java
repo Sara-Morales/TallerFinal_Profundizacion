@@ -15,4 +15,6 @@ public interface IShowtimesServices {
     ShowtimesResponseDTO findById(Long id);
 
     ShowtimesResponseDTO update(Long id, ShowtimesRequestDTO showtimesRequestDTO);
+
+    boolean validateIfExistShowtimesByMovieId(Long movieId);
 }
