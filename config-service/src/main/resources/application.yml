@@ -7,7 +7,7 @@ spring:
     config:
       server:
         git:
-          uri: file:///C:/Users/leisy/OneDrive/Documentos/Universidades/Poli/PROF-SW/configs-multi-project-trabajo-final
+          uri: file:///D:/U/Tecnologia/2024-1/ProfundizaciónSoftware/configs-multi-project-trabajo-final/configs-multi-project-trabajo-final
   security:
     user:
       name: ${CONFIG_NAME}

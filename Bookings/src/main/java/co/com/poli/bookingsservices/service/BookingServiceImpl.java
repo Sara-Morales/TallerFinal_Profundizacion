@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.stereotype.Service;
 
 import java.awt.print.Book;
@@ -22,11 +23,13 @@ public class BookingServiceImpl implements IBookingService {
 
     private final BookingRepository bookingRepository;
     private final UserClient userClient;
+    private final CircuitBreakerFactory factory;
 
     @Autowired
-    public BookingServiceImpl(BookingRepository bookingRepository, UserClient userClient) {
+    public BookingServiceImpl(BookingRepository bookingRepository, UserClient userClient, CircuitBreakerFactory factory) {
         this.bookingRepository = bookingRepository;
         this.userClient = userClient;
+        this.factory = factory;
     }
 
     private List<MoviesDTO> convertStringToMovies(String movies) {
@@ -71,8 +74,7 @@ public class BookingServiceImpl implements IBookingService {
     public BookingResponseDTO findById(Long id) {
         ModelMapper modelMapper = new ModelMapper();
         Optional<Booking> booking = bookingRepository.findById(id);
-        User user = modelMapper.map(userClient.findById(booking.get().getUserId()).getData(), User.class);
-        booking.get().setUser(user);
+        booking.get().setUser(findByIdUser(modelMapper, booking.get().getUserId()));
         return booking.map(this::convertBookingToResponseDTO).orElse(null);
     }
 
@@ -101,9 +103,20 @@ public class BookingServiceImpl implements IBookingService {
         List<Booking> bookings = bookingRepository.findAll();
 
         return bookings.stream().map((booking)-> {
-            User user = modelMapper.map(userClient.findById(booking.getUserId()).getData(), User.class);
-            booking.setUser(user);
+            booking.setUser(findById(modelMapper,booking.getUserId()));
             return convertBookingToResponseDTO(booking);
         } ).toList();
+    }
+
+    public User findByIdUser(ModelMapper modelMapper, Long userId){
+    return factory.create("Service-User")
+            .run(()->modelMapper.map(userClient.findById(userId).getData(), User.class),
+                    e -> new User());
+    }
+
+    public User findById(ModelMapper modelMapper,  Long getUserId){
+        return factory.create("Service-UserID")
+                .run(()->modelMapper.map(userClient.findById(getUserId), User.class),
+                        e -> new User());
     }
 }
