@@ -1,11 +1,14 @@
 package co.com.poli.bookingsservices.controller;
 
+import co.com.poli.bookingsservices.clientFeign.UserClient;
 import co.com.poli.bookingsservices.helpers.Response;
 import co.com.poli.bookingsservices.helpers.ResponseBuild;
+import co.com.poli.bookingsservices.model.User;
 import co.com.poli.bookingsservices.persistence.entity.Booking;
 import co.com.poli.bookingsservices.service.BookingServiceImpl;
 import co.com.poli.bookingsservices.service.dto.BookingRequestDTO;
 import co.com.poli.bookingsservices.service.dto.BookingResponseDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -24,12 +27,13 @@ public class BookingController {
     private final ResponseBuild responseBuild;
 
     @Autowired
-    public BookingController(BookingServiceImpl bookingService, ResponseBuild responseBuild) {
+    public BookingController(BookingServiceImpl bookingService, ResponseBuild responseBuild, UserClient user) {
         this.bookingService = bookingService;
         this.responseBuild = responseBuild;
     }
 
     @PostMapping
+    @Operation(summary = "Crear un agendamiento", tags = { "Bookings" })
     public Response createBooking(@Valid @RequestBody BookingRequestDTO bookingRequestDTO, BindingResult result) {
         if (result.hasErrors()) {
             return responseBuild.validationFailed(formatValidationErrors(result));
@@ -38,6 +42,7 @@ public class BookingController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obtener agendamiento por id", tags = { "Bookings" })
     public Response findBookingById(@PathVariable Long id) {
         BookingResponseDTO bookingResponseDTO = bookingService.findById(id);
         if (bookingResponseDTO != null) {
@@ -48,6 +53,7 @@ public class BookingController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar un agendamiento por id", tags = { "Bookings" })
     public Response deleteBookingById(@PathVariable Long id) {
         String message = bookingService.delete(id);
         if (message.equals("deleted")) {
@@ -58,6 +64,7 @@ public class BookingController {
     }
 
     @GetMapping("/user/{userId}")
+    @Operation(summary = "Obtener todas los agendamientos por userId", tags = { "Bookings" })
     public Response findBookingByUserId(@PathVariable Long userId) {
         BookingResponseDTO bookingResponseDTO = bookingService.findByUserId(userId);
         if (bookingResponseDTO != null) {
@@ -68,6 +75,7 @@ public class BookingController {
     }
 
     @GetMapping
+    @Operation(summary = "Obtener todos los agendamientos", tags = { "Bookings" })
     public Response findAllBookings() {
         List<BookingResponseDTO> bookingResponseDTO = bookingService.findAll();
         if (!bookingResponseDTO.isEmpty()) {
@@ -75,6 +83,13 @@ public class BookingController {
         } else {
             return responseBuild.failedNotFound("No bookings found");
         }
+    }
+
+    @GetMapping("validation-existence/{movieId}")
+    @Operation(summary = "Verificar agendamiento de pelicula", description = "Verificar si la pelicula está asociada a alguna agenda", tags = { "Bookings" })
+    public Response validExistence(@PathVariable("movieId") Long movieId) {
+        Boolean resultValidation = this.bookingService.validateIfExistBookingsByMovieId(movieId);
+        return this.responseBuild.successValidation(resultValidation);
     }
 
     private List<Map<String, String>> formatValidationErrors(BindingResult result) {

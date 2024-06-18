@@ -1,5 +1,6 @@
 package co.com.poli.bookingsservices.service.dto;
 
+import co.com.poli.bookingsservices.model.User;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -17,4 +18,5 @@ public class BookingResponseDTO {
     private Long userId;
     private Long showtimeId;
     private List<MoviesDTO> movies;
+    private User user;
 }

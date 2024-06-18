@@ -56,6 +56,16 @@ public class UserController {
         userService.delete(user);
         return responseBuild.success("Usuario eliminado correctamente");
     }
+
+    @GetMapping("/{id}")
+    public Response findById(@PathVariable Long id) {
+        User user = userService.findById(id);
+        if (user != null) {
+            return responseBuild.success(user);
+        } else {
+            return responseBuild.failedNotFound("User with ID " + id + " not found");
+        }
+    }
     private List<Map<String, String>> formatValidationErrors(BindingResult result) {
         return result.getFieldErrors()
                 .stream()

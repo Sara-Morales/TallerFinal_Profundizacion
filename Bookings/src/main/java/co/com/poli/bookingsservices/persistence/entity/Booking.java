@@ -1,5 +1,6 @@
 package co.com.poli.bookingsservices.persistence.entity;
 
+import co.com.poli.bookingsservices.model.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +10,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Booking {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,4 +22,7 @@ public class Booking {
 
     @Column(columnDefinition = "JSON", nullable = false)
     private String movies;
+
+    @Transient
+    private User user;
 }

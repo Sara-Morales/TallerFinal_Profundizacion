@@ -18,6 +18,12 @@ public class ResponseBuild {
         return Response.builder().code(HttpStatus.OK.value()).data(data).build();
     }
 
+    public Response successValidation(Boolean result) {
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("data", result);
+        return new Response(HttpStatus.OK.value(), response);
+    }
+
     public Response successCreated(Object data) {
         return Response.builder().code(HttpStatus.CREATED.value()).data(data).build();
     }
